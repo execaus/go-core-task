@@ -2,12 +2,54 @@ package main
 
 import (
 	"errors"
-	"math"
+	"fmt"
+	"log"
 	"math/rand"
 )
 
+const (
+	randomSize          = 10
+	randomMaxValue      = 99
+	addedElement        = 999
+	removedElementIndex = 2
+)
+
+func main() {
+	originalSlice, err := randomSlice(randomSize, randomMaxValue)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Original slice:", originalSlice)
+
+	evenSlice, err := sliceExample(originalSlice)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Even slice:", evenSlice)
+
+	addedSlice, err := addElements(originalSlice, addedElement)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(fmt.Sprintf("Slice after adding %v: %v,", addedElement, addedSlice))
+
+	copiedSlice, err := copySlice(originalSlice)
+	if err != nil {
+		log.Fatal(err)
+	}
+	originalSlice[0] = originalSlice[0] + addedElement
+	fmt.Println("Modified original slice:", originalSlice)
+	fmt.Println("Copied slice:", copiedSlice)
+
+	removedSlice, err := removeElement(originalSlice, removedElementIndex)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(fmt.Sprintf("Slice after removing index %v: %v", removedElementIndex, removedSlice))
+}
+
 // randomSlice создает срез случайных целых чисел заданного размера.
-func randomSlice(size int) ([]int, error) {
+func randomSlice(size, maxValue int) ([]int, error) {
 	if size < 0 {
 		return nil, errors.New("size cannot be negative")
 	}
@@ -17,7 +59,7 @@ func randomSlice(size int) ([]int, error) {
 
 	slice := make([]int, size)
 	for i := 0; i < size; i++ {
-		slice[i] = rand.Intn(math.MaxInt)
+		slice[i] = rand.Intn(maxValue)
 	}
 
 	return slice, nil

@@ -1,15 +1,20 @@
 package main
 
 import (
+	"math"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
+const (
+	testRandomMaxValue = math.MaxInt / 2
+)
+
 func TestRandomSlice_NegativeSize_Error(t *testing.T) {
 	const size = -1
 
-	s, err := randomSlice(size)
+	s, err := randomSlice(size, testRandomMaxValue)
 
 	assert.Error(t, err)
 	assert.Nil(t, s)
@@ -18,7 +23,7 @@ func TestRandomSlice_NegativeSize_Error(t *testing.T) {
 func TestRandomSlice_ZeroSize_Error(t *testing.T) {
 	const size = 0
 
-	s, err := randomSlice(size)
+	s, err := randomSlice(size, testRandomMaxValue)
 
 	assert.Error(t, err)
 	assert.Nil(t, s)
@@ -27,15 +32,27 @@ func TestRandomSlice_ZeroSize_Error(t *testing.T) {
 func TestRandomSlice_ManyCalls_DifferentValues(t *testing.T) {
 	const size = 10
 
-	first, err := randomSlice(size)
+	first, err := randomSlice(size, testRandomMaxValue)
 	assert.NoError(t, err)
 
-	second, err := randomSlice(size)
+	second, err := randomSlice(size, testRandomMaxValue)
 	assert.NoError(t, err)
 
 	assert.Equal(t, size, len(first))
 	assert.Equal(t, size, len(second))
 	assert.NotEqual(t, first, second)
+}
+
+func TestRandomSlice_MaxValue_Limit(t *testing.T) {
+	const size = 10000
+
+	s, err := randomSlice(size, testRandomMaxValue)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, s)
+	for _, v := range s {
+		assert.LessOrEqual(t, v, testRandomMaxValue)
+	}
 }
 
 func TestSliceExample_EmptySlice_Error(t *testing.T) {
@@ -141,6 +158,28 @@ func TestRemoveElement_CorrectInput_Success(t *testing.T) {
 	in := []int{10, 20, 30, 40, 50}
 	index := 2
 	expected := []int{10, 20, 40, 50}
+
+	result, err := removeElement(in, index)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expected, result)
+}
+
+func TestRemoveElement_FirstElement_Success(t *testing.T) {
+	in := []int{10, 20, 30, 40, 50}
+	index := 0
+	expected := []int{20, 30, 40, 50}
+
+	result, err := removeElement(in, index)
+
+	assert.NoError(t, err)
+	assert.Equal(t, expected, result)
+}
+
+func TestRemoveElement_LastElement_Success(t *testing.T) {
+	in := []int{10, 20, 30, 40, 50}
+	index := len(in) - 1
+	expected := []int{10, 20, 30, 40}
 
 	result, err := removeElement(in, index)
 
