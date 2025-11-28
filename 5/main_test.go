@@ -23,25 +23,25 @@ func TestIntersectInts(t *testing.T) {
 			name:     "no intersection",
 			a:        []int{1, 2},
 			b:        []int{3, 4},
-			expected: []int{},
+			expected: nil,
 		},
 		{
 			name:     "first slice empty",
 			a:        []int{},
 			b:        []int{1, 2, 3},
-			expected: []int{},
+			expected: nil,
 		},
 		{
 			name:     "second slice empty",
 			a:        []int{1, 2, 3},
 			b:        []int{},
-			expected: []int{},
+			expected: nil,
 		},
 		{
 			name:     "both slices empty",
 			a:        []int{},
 			b:        []int{},
-			expected: []int{},
+			expected: nil,
 		},
 		{
 			name:     "slices with duplicates",
@@ -53,7 +53,7 @@ func TestIntersectInts(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result, ok := IntersectInts(tt.a, tt.b)
+			ok, result := IntersectInts(tt.a, tt.b)
 			assert.Equal(t, tt.expected, result, "IntersectInts(%v, %v) result", tt.a, tt.b)
 			expectedOk := len(tt.expected) > 0
 			assert.Equal(t, expectedOk, ok, "IntersectInts(%v, %v) ok", tt.a, tt.b)
