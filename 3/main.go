@@ -11,21 +11,27 @@ func NewStringIntMap() *StringIntMap {
 }
 
 func (s *StringIntMap) Add(key string, value int) {
-	// TODO
+	s.m[key] = value
 }
 
 func (s *StringIntMap) Remove(key string) {
-	// TODO
+	delete(s.m, key)
 }
 
 func (s *StringIntMap) Copy() map[string]int {
-	// TODO
+	copyMap := make(map[string]int)
+	for k, v := range s.m {
+		copyMap[k] = v
+	}
+	return copyMap
 }
 
 func (s *StringIntMap) Exists(key string) bool {
-	// TODO
+	_, exists := s.m[key]
+	return exists
 }
 
 func (s *StringIntMap) Get(key string) (int, bool) {
-	// TODO
+	value, exists := s.m[key]
+	return value, exists
 }
