@@ -45,20 +45,40 @@ func read(pipeline *Pipeline) {
 }
 
 type Pipeline struct {
+	in  chan uint8
+	out chan *Result
 }
 
 func NewPipeline() *Pipeline {
-	return &Pipeline{}
+	p := Pipeline{
+		in:  make(chan uint8),
+		out: make(chan *Result),
+	}
+	go p.process()
+	return &p
 }
 
+// In возвращает канал для отправки входных чисел типа uint8 в pipeline.
 func (p *Pipeline) In() chan<- uint8 {
-	// TODO
+	return p.in
 }
 
+// Out возвращает канал для получения результатов обработки чисел.
 func (p *Pipeline) Out() <-chan *Result {
-	// TODO
+	return p.out
 }
 
+// Close закрывает входной канал pipeline.
 func (p *Pipeline) Close() {
-	// TODO
+	close(p.in)
+}
+
+func (p *Pipeline) process() {
+	for value := range p.in {
+		p.out <- &Result{
+			In:  value,
+			Out: math.Pow(float64(value), 3),
+		}
+	}
+	close(p.out)
 }

@@ -13,10 +13,12 @@ func TestPipeline_CorrectScenario_CubeConversion(t *testing.T) {
 	inputs := []uint8{0, 1, 2, 3, 4, 5, 10, 255}
 	out := p.Out()
 
-	for _, n := range inputs {
-		p.In() <- n
-	}
-	p.Close()
+	go func() {
+		for _, n := range inputs {
+			p.In() <- n
+		}
+		p.Close()
+	}()
 
 	results := collectResults(out)
 	require.Len(t, results, len(inputs))
@@ -42,10 +44,12 @@ func TestPipeline_CorrectScenario_CorrectOrder(t *testing.T) {
 	inputs := []uint8{2, 4, 6, 8}
 	out := p.Out()
 
-	for _, n := range inputs {
-		p.In() <- n
-	}
-	p.Close()
+	go func() {
+		for _, n := range inputs {
+			p.In() <- n
+		}
+		p.Close()
+	}()
 
 	results := collectResults(out)
 
