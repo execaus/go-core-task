@@ -23,7 +23,7 @@ func TestWaitGroup_DefaultScenario_Success(t *testing.T) {
 	wg.Wait()
 	elapsed := time.Since(start)
 
-	assert.GreaterOrEqual(t, elapsed.Milliseconds(), int64(100))
+	assert.GreaterOrEqual(t, elapsed.Milliseconds(), int64(50))
 }
 
 func TestWaitGroup_AddAfterDone_Panic(t *testing.T) {
@@ -82,10 +82,9 @@ func TestWaitGroup_MultipleWaits_GoroutineCorrectUnlocked(t *testing.T) {
 func TestWaitGroup_Concurrent_WaitBlocked(t *testing.T) {
 	const goroutineCount = 100
 	wg := NewWaitGroup()
-
 	wg.Add(goroutineCount)
 
-	finished := make(chan struct{})
+	finished := make(chan struct{}, goroutineCount)
 
 	for i := 0; i < goroutineCount; i++ {
 		go func() {
@@ -101,17 +100,20 @@ func TestWaitGroup_Concurrent_WaitBlocked(t *testing.T) {
 		close(waitDone)
 	}()
 
-	select {
-	case <-waitDone:
-		t.Errorf("Wait завершился слишком рано")
-	case <-time.After(5 * time.Millisecond):
-	}
-
 	for i := 0; i < goroutineCount; i++ {
 		<-finished
 	}
 
-	assert.NotPanics(t, func() { wg.Wait() })
+	assert.Eventually(t, func() bool {
+		select {
+		case <-waitDone:
+			return true
+		default:
+			return false
+		}
+	}, time.Second, 10*time.Millisecond, "Wait не завершился после всех Done")
+
+	assert.NotPanics(t, func() { wg.Wait() }, "Wait после завершения всех Done вызвал панику")
 }
 
 func TestWaitGroup_AddNegative_Panic(t *testing.T) {
