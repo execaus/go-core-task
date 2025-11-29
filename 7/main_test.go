@@ -11,7 +11,7 @@ func TestMerge_TwoChannels_Success(t *testing.T) {
 	c1 := makeChannels(1, 2, 3)
 	c2 := makeChannels(4, 5, 6)
 
-	merged := merge(c1, c2)
+	merged := Merge(c1, c2)
 
 	var results []int
 	for v := range merged {
@@ -24,7 +24,7 @@ func TestMerge_TwoChannels_Success(t *testing.T) {
 func TestMerge_OneChannel_Success(t *testing.T) {
 	c := makeChannels(10, 20, 30)
 
-	merged := merge(c)
+	merged := Merge(c)
 
 	var results []int
 	for v := range merged {
@@ -35,14 +35,14 @@ func TestMerge_OneChannel_Success(t *testing.T) {
 }
 
 func TestMerge_NoChannels_Panic(t *testing.T) {
-	assert.Panics(t, func() { merge() })
+	assert.Panics(t, func() { Merge() })
 }
 
 func TestMerge_EmptyChannel_Success(t *testing.T) {
 	c1 := makeChannels()
 	c2 := makeChannels(7, 8)
 
-	merged := merge(c1, c2)
+	merged := Merge(c1, c2)
 
 	results := []int{}
 	for v := range merged {
@@ -62,7 +62,7 @@ func TestMerge_SlowChannel_Success(t *testing.T) {
 		close(c1)
 	}()
 
-	merged := merge(c1, c2)
+	merged := Merge(c1, c2)
 
 	var results []int
 	for v := range merged {
